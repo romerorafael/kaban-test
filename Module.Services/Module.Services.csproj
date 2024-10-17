@@ -24,4 +24,8 @@
     <ProjectReference Include="..\API.OneOfErrors\API.OneOfErrors.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NovaPasta\" />
+  </ItemGroup>
+
 </Project>

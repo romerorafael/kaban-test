@@ -31,6 +31,7 @@ internal class UserServices : IUserServices
         if (dbUser != null) return new DuplicatedError();
 
         var newUser = await _dbContext.Users.AddAsync(user);
+        await CreateInitUserConfig(newUser.Entity);
         _dbContext.SaveChanges();
 
         return newUser.Entity;
@@ -42,6 +43,11 @@ internal class UserServices : IUserServices
 
         if (deleterUser == null) return new NotFoundError();
 
+        var deletedConfig = await _dbContext.UserConfig.FirstOrDefaultAsync( uc => uc.UserId == deleterUser.Id);
+
+        if (deletedConfig == null) return new NotFoundError();
+
+        _dbContext.UserConfig.Remove(deletedConfig);
         _dbContext.Users.Remove(deleterUser);
 
         _dbContext.SaveChanges();
@@ -86,5 +92,16 @@ internal class UserServices : IUserServices
         _dbContext.SaveChanges();
 
         return user;
+    }
+
+    private async Task CreateInitUserConfig(User user)
+    {
+        if (user == null) return;
+
+        var config = new UserConfig(user.Id);
+
+        await _dbContext.UserConfig.AddAsync(config);
+        await _dbContext.SaveChangesAsync();
+
     }
 }

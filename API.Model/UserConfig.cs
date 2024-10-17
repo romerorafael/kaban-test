@@ -2,13 +2,13 @@
 
 namespace API.Model;
 
-public class UserConfig(Guid userId, string? icon, string? color)
+public class UserConfig(Guid userId)
 {
     public long Id { get; set; } = default(long);
     public Guid UserId { get; set; } = userId;
     public long NumberOfCards { get; set; } = 0;
-    public string Icon { get; set; } = icon ?? "user";
-    public string Color { get; set; } = color ?? "blue";
+    public string Icon { get; set; } = "user";
+    public string Color { get; set; } = "blue";
 
 
     [ForeignKey(nameof(UserId))]

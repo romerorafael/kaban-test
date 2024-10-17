@@ -10,5 +10,9 @@ public static class BuilderConfig
     {
         services.AddScoped<IUserServices, UserServices>();
         services.AddScoped<IValidator<User>, UserValidator>();
+
+        services.AddScoped<IUserConfigService, UserConfigService>();
+        services.AddScoped<IValidator<UserConfig>, UserConfigValidator>();
+
     }
 }
