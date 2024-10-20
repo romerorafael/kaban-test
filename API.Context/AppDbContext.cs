@@ -22,26 +22,26 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<Board>(option =>
         {
             option.HasIndex(b => b.Id).IsCreatedConcurrently();
-            option.HasMany<Column>().WithOne().HasForeignKey("BoardId");
+            option.HasMany<Column>().WithOne();
             option.HasData(SeedBoard());
         });
 
         modelBuilder.Entity<Card>(option =>
         {
             option.HasIndex(c => c.Id);
-            option.HasOne<Board>().WithMany().HasForeignKey(c => c.BoardId);
-            option.HasOne<Column>().WithMany().HasForeignKey(c => c.ColumnId);
+            option.HasOne<Board>().WithMany();
+            option.HasOne<Column>().WithMany();
         });
 
         modelBuilder.Entity<Column>(option => { 
             option.HasIndex(c => c.Id);
-            option.HasOne<Board>().WithMany().HasForeignKey(c => c.BoardId);            
+            option.HasOne<Board>().WithMany();            
         });
 
         modelBuilder.Entity<Comment>(option => { 
             option.HasIndex(c=> c.Id).IsCreatedConcurrently();
-            option.HasOne<Card>().WithMany().HasForeignKey(c => c.CardId);
-            option.HasOne<User>().WithMany().HasForeignKey(c => c.UserId);
+            option.HasOne<Card>().WithMany();
+            option.HasOne<User>().WithMany();
         });
 
         modelBuilder.Entity<Role>(option =>
@@ -53,16 +53,15 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<User>(option =>
         {
             option.HasIndex(u => u.Id);
-            option.HasOne<Role>().WithMany().HasForeignKey(u => u.RoleId);
+            option.HasOne<Role>().WithMany();
             option.HasOne<UserConfig>()
-            .WithOne(uc => uc.User)
-            .HasForeignKey<UserConfig>(uc => uc.UserId);
+            .WithOne(uc => uc.User);
+
         });
         modelBuilder.Entity<UserConfig>(option => {
             option.HasIndex(uc => uc.Icon);
             option.HasOne<User>()
-            .WithOne(u => u.UserConfig)
-            .HasForeignKey<UserConfig>(uc => uc.UserId);
+            .WithOne(u => u.UserConfig);
         });        
 
         base.OnModelCreating(modelBuilder);

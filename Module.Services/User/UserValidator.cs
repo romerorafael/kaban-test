@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Module.Services;
 
-internal class UserValidator : AbstractValidator<User>
+public class UserValidator : AbstractValidator<User>
 {
     public UserValidator()
     {

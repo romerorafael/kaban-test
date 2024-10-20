@@ -22,10 +22,7 @@
     <ProjectReference Include="..\API.Context\API.Context.csproj" />
     <ProjectReference Include="..\API.Model\API.Model.csproj" />
     <ProjectReference Include="..\API.OneOfErrors\API.OneOfErrors.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NovaPasta\" />
+    <ProjectReference Include="..\Module.Auth\Module.Auth.csproj" />
   </ItemGroup>
 
 </Project>

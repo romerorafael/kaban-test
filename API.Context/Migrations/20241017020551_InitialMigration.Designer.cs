@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Context.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241016011429_InitialMigration")]
+    [Migration("20241017020551_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -150,6 +150,9 @@ namespace API.Context.Migrations
                     b.Property<long?>("BoardId1")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("BoardId2")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -159,6 +162,8 @@ namespace API.Context.Migrations
                     b.HasIndex("BoardId");
 
                     b.HasIndex("BoardId1");
+
+                    b.HasIndex("BoardId2");
 
                     b.HasIndex("Id");
 
@@ -302,6 +307,9 @@ namespace API.Context.Migrations
 
                     b.HasIndex("RoleId1");
 
+                    b.HasIndex("UserConfigId")
+                        .IsUnique();
+
                     b.ToTable("Users", "kanban");
                 });
 
@@ -327,9 +335,6 @@ namespace API.Context.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UserId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Icon");
@@ -337,30 +342,28 @@ namespace API.Context.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.HasIndex("UserId1");
-
                     b.ToTable("UserConfig", "kanban");
                 });
 
             modelBuilder.Entity("API.Model.Card", b =>
                 {
-                    b.HasOne("API.Model.Board", null)
+                    b.HasOne("API.Model.Board", "Board")
                         .WithMany()
                         .HasForeignKey("BoardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Model.Board", "Board")
+                    b.HasOne("API.Model.Board", null)
                         .WithMany()
                         .HasForeignKey("BoardId1");
 
-                    b.HasOne("API.Model.Column", null)
+                    b.HasOne("API.Model.Column", "Column")
                         .WithMany()
                         .HasForeignKey("ColumnId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Model.Column", "Column")
+                    b.HasOne("API.Model.Column", null)
                         .WithMany()
                         .HasForeignKey("ColumnId1");
 
@@ -371,38 +374,42 @@ namespace API.Context.Migrations
 
             modelBuilder.Entity("API.Model.Column", b =>
                 {
-                    b.HasOne("API.Model.Board", null)
-                        .WithMany()
+                    b.HasOne("API.Model.Board", "Board")
+                        .WithMany("Columns")
                         .HasForeignKey("BoardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Model.Board", "Board")
-                        .WithMany("Columns")
+                    b.HasOne("API.Model.Board", null)
+                        .WithMany()
                         .HasForeignKey("BoardId1");
+
+                    b.HasOne("API.Model.Board", null)
+                        .WithMany()
+                        .HasForeignKey("BoardId2");
 
                     b.Navigation("Board");
                 });
 
             modelBuilder.Entity("API.Model.Comment", b =>
                 {
-                    b.HasOne("API.Model.Card", null)
+                    b.HasOne("API.Model.Card", "Card")
                         .WithMany()
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Model.Card", "Card")
+                    b.HasOne("API.Model.Card", null)
                         .WithMany()
                         .HasForeignKey("CardId1");
 
-                    b.HasOne("API.Model.User", null)
+                    b.HasOne("API.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Model.User", "User")
+                    b.HasOne("API.Model.User", null)
                         .WithMany()
                         .HasForeignKey("UserId1");
 
@@ -413,30 +420,34 @@ namespace API.Context.Migrations
 
             modelBuilder.Entity("API.Model.User", b =>
                 {
-                    b.HasOne("API.Model.Role", null)
+                    b.HasOne("API.Model.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Model.Role", "Role")
+                    b.HasOne("API.Model.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId1");
 
+                    b.HasOne("API.Model.UserConfig", "UserConfig")
+                        .WithOne()
+                        .HasForeignKey("API.Model.User", "UserConfigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Role");
+
+                    b.Navigation("UserConfig");
                 });
 
             modelBuilder.Entity("API.Model.UserConfig", b =>
                 {
-                    b.HasOne("API.Model.User", null)
-                        .WithOne("UserConfig")
+                    b.HasOne("API.Model.User", "User")
+                        .WithOne()
                         .HasForeignKey("API.Model.UserConfig", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("API.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("User");
                 });
@@ -444,11 +455,6 @@ namespace API.Context.Migrations
             modelBuilder.Entity("API.Model.Board", b =>
                 {
                     b.Navigation("Columns");
-                });
-
-            modelBuilder.Entity("API.Model.User", b =>
-                {
-                    b.Navigation("UserConfig");
                 });
 #pragma warning restore 612, 618
         }

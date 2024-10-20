@@ -60,7 +60,8 @@ namespace API.Context.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     BoardId = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    BoardId1 = table.Column<long>(type: "bigint", nullable: true)
+                    BoardId1 = table.Column<long>(type: "bigint", nullable: true),
+                    BoardId2 = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -78,37 +79,11 @@ namespace API.Context.Migrations
                         principalSchema: "kanban",
                         principalTable: "Boards",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                schema: "kanban",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserConfigId = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    RoleId1 = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
-                        column: x => x.RoleId,
+                        name: "FK_Columns_Boards_BoardId2",
+                        column: x => x.BoardId2,
                         principalSchema: "kanban",
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId1",
-                        column: x => x.RoleId1,
-                        principalSchema: "kanban",
-                        principalTable: "Roles",
+                        principalTable: "Boards",
                         principalColumn: "Id");
                 });
 
@@ -166,37 +141,6 @@ namespace API.Context.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserConfig",
-                schema: "kanban",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    NumberOfCards = table.Column<long>(type: "bigint", nullable: false),
-                    Icon = table.Column<string>(type: "text", nullable: false),
-                    Color = table.Column<string>(type: "text", nullable: false),
-                    UserId1 = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserConfig", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserConfig_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "kanban",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserConfig_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalSchema: "kanban",
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Comments",
                 schema: "kanban",
                 columns: table => new
@@ -230,19 +174,62 @@ namespace API.Context.Migrations
                         principalSchema: "kanban",
                         principalTable: "Cards",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserConfig",
+                schema: "kanban",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NumberOfCards = table.Column<long>(type: "bigint", nullable: false),
+                    Icon = table.Column<string>(type: "text", nullable: false),
+                    Color = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserConfig", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                schema: "kanban",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserConfigId = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<long>(type: "bigint", nullable: false),
+                    RoleId1 = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
                         principalSchema: "kanban",
-                        principalTable: "Users",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_Users_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Users_Roles_RoleId1",
+                        column: x => x.RoleId1,
                         principalSchema: "kanban",
-                        principalTable: "Users",
+                        principalTable: "Roles",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Users_UserConfig_UserConfigId",
+                        column: x => x.UserConfigId,
+                        principalSchema: "kanban",
+                        principalTable: "UserConfig",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -311,6 +298,12 @@ namespace API.Context.Migrations
                 column: "BoardId1");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Columns_BoardId2",
+                schema: "kanban",
+                table: "Columns",
+                column: "BoardId2");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Columns_Id",
                 schema: "kanban",
                 table: "Columns",
@@ -367,12 +360,6 @@ namespace API.Context.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserConfig_UserId1",
-                schema: "kanban",
-                table: "UserConfig",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_Id",
                 schema: "kanban",
                 table: "Users",
@@ -389,17 +376,54 @@ namespace API.Context.Migrations
                 schema: "kanban",
                 table: "Users",
                 column: "RoleId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserConfigId",
+                schema: "kanban",
+                table: "Users",
+                column: "UserConfigId",
+                unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Comments_Users_UserId",
+                schema: "kanban",
+                table: "Comments",
+                column: "UserId",
+                principalSchema: "kanban",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Comments_Users_UserId1",
+                schema: "kanban",
+                table: "Comments",
+                column: "UserId1",
+                principalSchema: "kanban",
+                principalTable: "Users",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_UserConfig_Users_UserId",
+                schema: "kanban",
+                table: "UserConfig",
+                column: "UserId",
+                principalSchema: "kanban",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Comments",
-                schema: "kanban");
+            migrationBuilder.DropForeignKey(
+                name: "FK_UserConfig_Users_UserId",
+                schema: "kanban",
+                table: "UserConfig");
 
             migrationBuilder.DropTable(
-                name: "UserConfig",
+                name: "Comments",
                 schema: "kanban");
 
             migrationBuilder.DropTable(
@@ -407,11 +431,15 @@ namespace API.Context.Migrations
                 schema: "kanban");
 
             migrationBuilder.DropTable(
-                name: "Users",
+                name: "Columns",
                 schema: "kanban");
 
             migrationBuilder.DropTable(
-                name: "Columns",
+                name: "Boards",
+                schema: "kanban");
+
+            migrationBuilder.DropTable(
+                name: "Users",
                 schema: "kanban");
 
             migrationBuilder.DropTable(
@@ -419,7 +447,7 @@ namespace API.Context.Migrations
                 schema: "kanban");
 
             migrationBuilder.DropTable(
-                name: "Boards",
+                name: "UserConfig",
                 schema: "kanban");
         }
     }

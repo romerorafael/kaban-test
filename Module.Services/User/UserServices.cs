@@ -3,6 +3,7 @@ using API.Model;
 using API.OneOfErrors;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Module.Auth;
 using OneOf;
 
 namespace Module.Services;
@@ -11,11 +12,13 @@ internal class UserServices : IUserServices
 {
     private readonly AppDbContext _dbContext;
     private readonly IValidator<User> _validator;
+    private readonly IAuthService _authService;
 
-    public UserServices(AppDbContext dbContext, IValidator<User> validator)
+    public UserServices(AppDbContext dbContext, IValidator<User> validator, IAuthService authService)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext)); ;
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
     public async Task<OneOf<User, AppError>> Create(User user)
@@ -30,9 +33,15 @@ internal class UserServices : IUserServices
 
         if (dbUser != null) return new DuplicatedError();
 
+
         var newUser = await _dbContext.Users.AddAsync(user);
-        await CreateInitUserConfig(newUser.Entity);
         _dbContext.SaveChanges();
+
+        var userconfig = await CreateInitUserConfig(newUser.Entity);
+        user.UserConfigId = userconfig.AsT0.Id;
+        newUser.Entity.Password = _authService.CodePassword(user.Password, newUser.Entity.Id);
+        _dbContext.SaveChanges();
+
 
         return newUser.Entity;
     }
@@ -94,14 +103,14 @@ internal class UserServices : IUserServices
         return user;
     }
 
-    private async Task CreateInitUserConfig(User user)
+    private async Task<OneOf<UserConfig, AppError>> CreateInitUserConfig(User user)
     {
-        if (user == null) return;
+        if (user == null) return new EmptyElementInsertError();
 
         var config = new UserConfig(user.Id);
 
         await _dbContext.UserConfig.AddAsync(config);
-        await _dbContext.SaveChangesAsync();
 
+        return config;
     }
 }
