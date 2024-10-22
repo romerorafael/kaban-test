@@ -97,5 +97,24 @@ public class UserController
         );
     }
 
+    [HttpDelete("{userId}")]
+    public async Task<IResult> Delete(
+        [FromServices] IUserServices _userService,
+        [FromServices] IMapper _mapper,
+        [FromRoute] Guid userId
+    )
+    {
+        var request = await _userService.Delete(userId);
+
+        return request.Match(
+            user => Results.Ok(user),
+            error =>
+            {
+                if (error is BusinessRulesError || error is DuplicatedError) return Results.UnprocessableEntity();
+
+                return Results.BadRequest();
+            }
+        );
+    }
 }
 

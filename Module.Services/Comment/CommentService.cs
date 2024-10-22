@@ -12,13 +12,11 @@ internal class CommentService : ICommentService
 {
     private readonly AppDbContext _dbContext;
     private readonly IValidator<Comment> _validator;
-    private readonly IAuthService _authService;
 
-    public CommentService(AppDbContext dbContext, IValidator<Comment> validator, IAuthService authService)
+    public CommentService(AppDbContext dbContext, IValidator<Comment> validator)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
-        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
     public async Task<OneOf<Comment, AppError>> Create(Comment comment)
@@ -39,9 +37,9 @@ internal class CommentService : ICommentService
         return newComment.Entity;
     }
 
-    public async Task<OneOf<bool, AppError>> Delete(Guid guid)
+    public async Task<OneOf<bool, AppError>> Delete(long id)
     {
-        var deletedComment = await _dbContext.Comments.FindAsync(guid);
+        var deletedComment = await _dbContext.Comments.FindAsync(id);
 
         if (deletedComment == null) return new NotFoundError();
 

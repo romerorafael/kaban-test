@@ -39,9 +39,9 @@ internal class ColumnService: IColumnService
         return newColumn.Entity;
     }
 
-    public async Task<OneOf<bool, AppError>> Delete(Guid guid)
+    public async Task<OneOf<bool, AppError>> Delete(long id)
     {
-        var deletedColumn = await _dbContext.Columns.FindAsync(guid);
+        var deletedColumn = await _dbContext.Columns.FindAsync(id);
 
         if (deletedColumn == null) return new NotFoundError();
 

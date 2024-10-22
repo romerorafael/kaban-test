@@ -40,9 +40,9 @@ internal class BoardService : IBoardService
         return newBoard.Entity;
     }
 
-    public async Task<OneOf<bool, AppError>> Delete(Guid guid)
+    public async Task<OneOf<bool, AppError>> Delete(long boardId)
     {
-        var deleterBoard = await _dbContext.Boards.FindAsync(guid);
+        var deleterBoard = await _dbContext.Boards.FindAsync(boardId);
 
         if (deleterBoard == null) return new NotFoundError();
 

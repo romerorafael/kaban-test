@@ -7,7 +7,7 @@ namespace Module.Services;
 public interface ICommentService
 {
     Task<OneOf<Comment, AppError>> Create(Comment comment);
-    Task<OneOf<bool, AppError>> Delete(Guid guid);
+    Task<OneOf<bool, AppError>> Delete(long id);
     Task<OneOf<Comment, AppError>> Update(Comment comment);
     Task<OneOf<List<Comment>, AppError>> GetAll();
     Task<OneOf<Comment, AppError>> Get(long commentId);

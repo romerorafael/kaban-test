@@ -7,7 +7,7 @@ namespace Module.Services;
 public interface IBoardService
 {
     Task<OneOf<Board, AppError>> Create(Board board);
-    Task<OneOf<bool, AppError>> Delete(Guid guid);
+    Task<OneOf<bool, AppError>> Delete(long boardId);
     Task<OneOf<Board, AppError>> Update(Board board);
     Task<OneOf<List<Board>, AppError>> GetAll();
     Task<OneOf<Board, AppError>> Get(long boardId);
